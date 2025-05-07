@@ -32,17 +32,13 @@ class UserAuthController extends Controller
     public function login(Request $request)
     {
         $data = $request->validate([
-            'email' => 'email|required',
+            'email' => 'email|required|exists:users,email',
             'password' => 'required'
         ]);
 
-        if (!auth()->attempt($data)) {
-            return response(['error_message' => 'Incorrect Details. Please try again']);
-        }
+        $data = $this->userAuthService->login($data);
 
-        $token = auth()->user()->createToken('API Token')->accessToken;
-
-        return response(['user' => auth()->user(), 'token' => $token]);
+        return response($data);
 
     }
 }

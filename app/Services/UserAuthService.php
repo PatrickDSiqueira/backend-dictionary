@@ -20,15 +20,37 @@ class UserAuthService
 
         $user = $this->userAuthServiceRepository->createUser($data);
 
+        $token = $this->generateToken($user);
+
+        return $this->returnAuthData($user, $token);
+    }
+
+    private function generateToken(User $user): string
+    {
+        return $user->createToken('API Token')->accessToken;
+    }
+
+    private function returnAuthData(User $user, string $token): array
+    {
         return [
             'id' => $user->id,
             'name' => $user->name,
-            'token' => $this->generateToken($user)
+            'token' => $token
         ];
     }
 
-    private function generateToken(User $user)
+    public function login(array $data)
     {
-        return $user->createToken('API Token')->accessToken;
+
+        if (!auth()->attempt($data)) {
+
+            return response(['error_message' => 'Incorrect Details. Please try again']);
+        }
+
+        $user = auth()->user();
+
+        $token = $this->generateToken($user);
+
+        return $this->returnAuthData($user, $token);
     }
 }
