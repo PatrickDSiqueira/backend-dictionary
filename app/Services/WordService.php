@@ -28,4 +28,16 @@ class WordService
             'hasPrev' => $paginated->currentPage() > 1,
         ];
     }
+
+    public function getWordByLabel(string $label): array
+    {
+        $word = $this->wordServiceRepository->getWordsByLabel($label);
+
+        if ($word) {
+
+            return $word->toArray();
+        }
+
+        return [];
+    }
 }
