@@ -9,10 +9,13 @@ Route::post('/auth/signup', [UserAuthController::class, 'register']);
 
 Route::post('/auth/signin', [UserAuthController::class, 'login']);
 
-Route::get('entries/en', [WordController::class, 'index']);
+Route::middleware('auth:api')->group(function () {
 
-Route::get('entries/en/{word}', [WordController::class, 'show']);
+    Route::get('entries/en', [WordController::class, 'index']);
 
-Route::post('entries/en/{word}/favorite', [FavoriteController::class, 'store']);
+    Route::get('entries/en/{word}', [WordController::class, 'show']);
 
-Route::delete('entries/en/{word}/unfavorite', [FavoriteController::class, 'destroy']);
+    Route::post('entries/en/{word}/favorite', [FavoriteController::class, 'store']);
+
+    Route::delete('entries/en/{word}/unfavorite', [FavoriteController::class, 'destroy']);
+});
