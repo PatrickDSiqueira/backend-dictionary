@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\UserAuthController;
 use App\Http\Controllers\WordController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\UserController;
+use Illuminate\Http\Request;
 
 Route::post('/auth/signup', [UserAuthController::class, 'register']);
 
@@ -26,4 +27,9 @@ Route::middleware('auth:api')->group(function () {
     Route::get('user/me', [UserController::class, 'show']);
 
     Route::get('user/me/history', [UserVisitHistoryController::class, 'index']);
+});
+
+Route::get('/test-exception', function () {
+
+    throw new \Exception('Erro de teste');
 });
