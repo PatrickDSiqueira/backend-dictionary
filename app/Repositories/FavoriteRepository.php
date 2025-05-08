@@ -8,6 +8,13 @@ use App\Models\Word;
 
 class FavoriteRepository
 {
+
+    public function getFavoriteWordsPaginated(User $user)
+    {
+        return $this->builderFavoriteWords($user)
+            ->paginate(10);
+    }
+
     public function favoriteWord(Word $word, User $user)
     {
         Favorite::query()->firstOrCreate([
@@ -21,5 +28,10 @@ class FavoriteRepository
         Favorite::where('word_id', $word->id)
             ->where('user_id', $user->id)
             ->delete();
+    }
+
+    public function builderFavoriteWords(User $user)
+    {
+        return Favorite::query()->where('user_id', $user->id);
     }
 }

@@ -18,7 +18,9 @@ class FavoriteController extends Controller
      */
     public function index()
     {
-        //
+        $favorites = $this->favoriteService->getUserFavoriteWords(auth()->user());
+
+        return response()->json($favorites);
     }
 
     /**

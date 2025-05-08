@@ -17,6 +17,8 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('entries/en/{word}', [WordController::class, 'show']);
 
+    Route::get('user/me/favorites', [FavoriteController::class, 'index']);
+
     Route::post('entries/en/{word}/favorite', [FavoriteController::class, 'store']);
 
     Route::delete('entries/en/{word}/unfavorite', [FavoriteController::class, 'destroy']);

@@ -17,6 +17,25 @@ class FavoriteService
         $this->wordRepository = $wordRepository;
     }
 
+    public function getUserFavoriteWords(User $user): array
+    {
+        $paginated = $this->favoriteRepository->getFavoriteWordsPaginated($user);
+
+        $favorites = array_map(fn($favorite) => [
+            'word' => $favorite->word->label,
+            'added' => $favorite->created_at
+        ], $paginated->items());
+
+        return [
+            'results' => $favorites,
+            'totalDocs' => $paginated->total(),
+            'page' => $paginated->currentPage(),
+            'totalPages' => $paginated->lastPage(),
+            'hasNext' => $paginated->hasMorePages(),
+            'hasPrev' => $paginated->currentPage() > 1,
+        ];
+    }
+
     public function toggleFavorite(bool $isFavorite, string $wordLabel, User $user): void
     {
         $word = $this->wordRepository->getWordsByLabel($wordLabel);
