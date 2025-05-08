@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Word;
 use Illuminate\Http\Request;
 use App\Services\WordService;
+use App\Traits\CacheableResponse;
 
 class WordController extends Controller
 {
+    use CacheableResponse;
 
     private WordService $wordService;
 
@@ -26,10 +28,14 @@ class WordController extends Controller
             'limit' => 'sometimes|integer|min:1',
         ]);
 
-        $data = $this->wordService->searchWords(
-            $request->input('search', ''),
-            $request->input('limit', 10)
-        );
+        $data = $this->processOrCache(
+            $request,
+            function () use ($request) {
+                return $this->wordService->searchWords(
+                    $request->input('search', ''),
+                    $request->input('limit', 10)
+                );
+            });
 
         return response($data);
     }
