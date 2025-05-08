@@ -28,4 +28,9 @@ class WordRepository
         return $this->builderWordsByLabel($label, $columns)
             ->first();
     }
+
+    public function createWords(array $wordData): void
+    {
+        Word::query()->insert($wordData);
+    }
 }

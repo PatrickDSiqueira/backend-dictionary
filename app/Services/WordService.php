@@ -45,4 +45,9 @@ class WordService
 
         return [];
     }
+
+    public function createWords(array $wordData): void
+    {
+        $this->wordRepository->createWords($wordData);
+    }
 }
