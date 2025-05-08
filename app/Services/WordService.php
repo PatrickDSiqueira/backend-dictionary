@@ -3,14 +3,17 @@
 namespace App\Services;
 
 use App\Repositories\WordRepository;
+use App\Models\User;
 
 class WordService
 {
     private WordRepository $wordRepository;
+    private UserVisitHistoryService $userVisitHistoryService;
 
-    public function __construct(WordRepository $wordRepository)
+    public function __construct(WordRepository $wordRepository, UserVisitHistoryService $userVisitHistoryService)
     {
         $this->wordRepository = $wordRepository;
+        $this->userVisitHistoryService = $userVisitHistoryService;
     }
 
     public function searchWords(string $search, int $limit): array
@@ -29,11 +32,13 @@ class WordService
         ];
     }
 
-    public function getWordByLabel(string $label): array
+    public function getWordByLabel(string $label, User $user): array
     {
         $word = $this->wordRepository->getWordsByLabel($label);
 
         if ($word) {
+
+            $this->userVisitHistoryService->store($user, $word);
 
             return $word->toArray();
         }

@@ -45,9 +45,9 @@ class WordController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($wordLabel, Request $request)
+    public function show($wordLabel)
     {
-        $dataWord = $this->wordService->getWordByLabel($wordLabel);
+        $dataWord = $this->wordService->getWordByLabel($wordLabel, auth()->user());
 
         return response($dataWord);
     }

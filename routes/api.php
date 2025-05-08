@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\UserVisitHistoryController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\UserAuthController;
 use App\Http\Controllers\WordController;
@@ -21,4 +22,6 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('entries/en/{word}/unfavorite', [FavoriteController::class, 'destroy']);
 
     Route::get('user/me', [UserController::class, 'show']);
+
+    Route::get('user/me/history', [UserVisitHistoryController::class, 'index']);
 });
