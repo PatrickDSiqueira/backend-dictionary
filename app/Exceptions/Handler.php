@@ -3,49 +3,55 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use \Illuminate\Http\JsonResponse;
 use Throwable;
-use Illuminate\Support\Facades\Log;
-use Exception;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Auth\Access\AuthorizationException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+
 class Handler extends ExceptionHandler
 {
-    public function render($request, Throwable $exception)
+    public function render($request, Throwable $e)
     {
-        if ($request->wantsJson()) {
+        if ($this->mustHandleApiException($request, $e)) {
 
-            return $this->handleApiException($request, $exception);
+            return $this->handleApiException( $e);
+
         } else {
-            return parent::render($request, $exception);
+
+            return parent::render($request, $e);
         }
     }
 
-    private function handleApiException($request, Exception $exception)
-    {
-
-        $exception = $this->prepareException($exception);
-
-        if ($exception instanceof \Illuminate\Http\Exception\HttpResponseException) {
-            $exception = $exception->getResponse();
-        }
-
-        if ($exception instanceof \Illuminate\Auth\AuthenticationException) {
-            $exception = $this->unauthenticated($request, $exception);
-        }
-
-        if ($exception instanceof \Illuminate\Validation\ValidationException) {
-            $exception = $this->convertValidationExceptionToResponse($exception, $request);
-        }
-
-        return $this->customApiResponse($exception);
-    }
-
-    private function customApiResponse($exception)
+    private function handleApiException(Throwable $exception): JsonResponse
     {
         $statusCode = method_exists($exception, 'getStatusCode') ? $exception->getStatusCode() : 500;
-            
+
         $response = [
             'message' => ($statusCode == 500) ? 'Error message' : $exception->getMessage(),
         ];
 
         return response()->json($response, 400);
+    }
+
+    public function mustHandleApiException($request, $exception)
+    {
+        $notCustomException = [
+            ValidationException::class,
+            AuthenticationException::class,
+            AuthorizationException::class,
+            HttpException::class,
+        ];
+
+        if (!$request->wantsJson()) {
+            return false;
+        }
+
+        if (in_array(get_class($exception), $notCustomException)) {
+            return false;
+        }
+
+        return true;
     }
 }
