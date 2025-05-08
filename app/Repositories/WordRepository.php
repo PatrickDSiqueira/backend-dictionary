@@ -6,7 +6,7 @@ use App\Models\Word;
 
 use \Illuminate\Pagination\LengthAwarePaginator;
 
-class WordServiceRepository
+class WordRepository
 {
 
     public function getAllWordsPaginated(string $search, int $perPage, array $columns = ['label']): LengthAwarePaginator

@@ -4,14 +4,14 @@ namespace App\Services;
 
 use App\Repositories\FavoriteRepository;
 use App\Models\User;
-use App\Repositories\WordServiceRepository;
+use App\Repositories\WordRepository;
 
 class FavoriteService
 {
     protected FavoriteRepository $favoriteRepository;
-    protected WordServiceRepository $wordRepository;
+    protected WordRepository $wordRepository;
 
-    public function __construct(FavoriteRepository $favoriteRepository, WordServiceRepository $wordRepository)
+    public function __construct(FavoriteRepository $favoriteRepository, WordRepository $wordRepository)
     {
         $this->favoriteRepository = $favoriteRepository;
         $this->wordRepository = $wordRepository;

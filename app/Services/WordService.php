@@ -2,20 +2,20 @@
 
 namespace App\Services;
 
-use App\Repositories\WordServiceRepository;
+use App\Repositories\WordRepository;
 
 class WordService
 {
-    private WordServiceRepository $wordServiceRepository;
+    private WordRepository $wordRepository;
 
-    public function __construct(WordServiceRepository $wordServiceRepository)
+    public function __construct(WordRepository $wordRepository)
     {
-        $this->wordServiceRepository = $wordServiceRepository;
+        $this->wordRepository = $wordRepository;
     }
 
     public function searchWords(string $search, int $limit): array
     {
-        $paginated = $this->wordServiceRepository->getAllWordsPaginated($search, $limit);
+        $paginated = $this->wordRepository->getAllWordsPaginated($search, $limit);
 
         $words = array_map(fn ($word) => $word->label, $paginated->items());
 
@@ -31,7 +31,7 @@ class WordService
 
     public function getWordByLabel(string $label): array
     {
-        $word = $this->wordServiceRepository->getWordsByLabel($label);
+        $word = $this->wordRepository->getWordsByLabel($label);
 
         if ($word) {
 
