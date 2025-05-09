@@ -45,7 +45,6 @@ class ImportWordsCommand extends Command
                 $wordService->createWords(array_map(function ($word) use ($words, $now) {
                     return [
                         'label' => $word,
-                        'definition' => $words[$word],
                         'created_at' => $now,
                         'updated_at' => $now,
                     ];
