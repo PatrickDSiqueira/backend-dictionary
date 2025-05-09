@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Repositories\WordRepository;
 use App\Models\User;
-
+use Illuminate\Support\Facades\Http;
 class WordService
 {
     private WordRepository $wordRepository;
@@ -39,6 +39,17 @@ class WordService
         if ($word) {
 
             $this->userVisitHistoryService->store($user, $word);
+
+            $response = Http::get("https://api.dictionaryapi.dev/api/v2/entries/en/{$label}");
+            
+            if ($response->successful()) {
+
+                $apiData = $response->json()[0];
+                
+                $word->meanings = $apiData['meanings'] ?? [];
+                $word->phonetics = $apiData['phonetics'] ?? [];
+                $word->origin = $apiData['origin'] ?? null;
+            }
 
             return $word->toArray();
         }
