@@ -1,0 +1,362 @@
+openapi: 3.0.0
+info:
+  title: Dictionary API
+  description: A RESTful API for dictionary word lookups and user management
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@example.com
+
+servers:
+  - url: /api
+    description: API base URL
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Error message
+        code:
+          type: integer
+          description: HTTP status code
+
+    WordList:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            type: string
+          description: List of word labels
+        totalDocs:
+          type: integer
+          description: Total number of documents
+        page:
+          type: integer
+          description: Current page number
+        totalPages:
+          type: integer
+          description: Total number of pages
+        hasNext:
+          type: boolean
+          description: Whether there is a next page
+        hasPrev:
+          type: boolean
+          description: Whether there is a previous page
+
+    WordDetail:
+      type: object
+      properties:
+        label:
+          type: string
+          description: The word label
+        meanings:
+          type: array
+          items:
+            type: object
+            properties:
+              partOfSpeech:
+                type: string
+              definitions:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    definition:
+                      type: string
+                    example:
+                      type: string
+        phonetics:
+          type: array
+          items:
+            type: object
+            properties:
+              text:
+                type: string
+              audio:
+                type: string
+        origin:
+          type: string
+          nullable: true
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+
+    RegisterRequest:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+
+paths:
+  /auth/signup:
+    post:
+      summary: Register a new user
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User successfully registered
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/signin:
+    post:
+      summary: Login user
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: User successfully logged in
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /entries/en:
+    get:
+      summary: Search words
+      tags:
+        - Words
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Search term
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+          description: Number of results per page
+      responses:
+        '200':
+          description: List of words
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WordList'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /entries/en/{word}:
+    get:
+      summary: Get word details
+      tags:
+        - Words
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: word
+          required: true
+          schema:
+            type: string
+          description: Word to look up
+      responses:
+        '200':
+          description: Word details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WordDetail'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Word not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /user/me:
+    get:
+      summary: Get current user profile
+      tags:
+        - User
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /user/me/favorites:
+    get:
+      summary: Get user's favorite words
+      tags:
+        - Favorites
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of favorite words
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /entries/en/{word}/favorite:
+    post:
+      summary: Add word to favorites
+      tags:
+        - Favorites
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: word
+          required: true
+          schema:
+            type: string
+          description: Word to favorite
+      responses:
+        '200':
+          description: Word added to favorites
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /entries/en/{word}/unfavorite:
+    delete:
+      summary: Remove word from favorites
+      tags:
+        - Favorites
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: word
+          required: true
+          schema:
+            type: string
+          description: Word to unfavorite
+      responses:
+        '200':
+          description: Word removed from favorites
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /user/me/history:
+    get:
+      summary: Get user's word search history
+      tags:
+        - History
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of searched words
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error' 
