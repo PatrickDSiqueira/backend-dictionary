@@ -6,7 +6,7 @@ use App\Models\Word;
 use Illuminate\Http\Request;
 use App\Services\WordService;
 use App\Traits\CacheableResponse;
-
+use Exception;
 class WordController extends Controller
 {
     use CacheableResponse;
@@ -54,6 +54,11 @@ class WordController extends Controller
     public function show($wordLabel)
     {
         $dataWord = $this->wordService->getWordByLabel($wordLabel, auth()->user());
+
+        if (!$dataWord) {
+
+            throw new Exception('Word not found');
+        }
 
         return response($dataWord);
     }

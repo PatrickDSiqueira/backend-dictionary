@@ -32,7 +32,7 @@ class WordService
         ];
     }
 
-    public function getWordByLabel(string $label, User $user): array
+    public function getWordByLabel(string $label, User $user): array|false
     {
         $word = $this->wordRepository->getWordsByLabel($label, exactMatch: true);
 
@@ -54,7 +54,7 @@ class WordService
             return $word->toArray();
         }
 
-        return [];
+        return false;
     }
 
     public function createWords(array $wordData): void
