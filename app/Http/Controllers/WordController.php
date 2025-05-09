@@ -57,7 +57,7 @@ class WordController extends Controller
 
         if (!$dataWord) {
 
-            throw new Exception('Word not found');
+            throw new Exception('Word not found', 404);
         }
 
         return response($dataWord);

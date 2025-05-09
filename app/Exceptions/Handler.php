@@ -26,10 +26,10 @@ class Handler extends ExceptionHandler
 
     private function handleApiException(Throwable $exception): JsonResponse
     {
-        $statusCode = method_exists($exception, 'getStatusCode') ? $exception->getStatusCode() : 500;
+        $statusCode = $exception?->getCode() ?? 500;
 
         $response = [
-            'message' => ($statusCode == 500) ? 'Error message' : $exception->getMessage(),
+            'message' => $statusCode == 500 ? 'Internal server error' : $exception->getMessage(),
         ];
 
         return response()->json($response, 400);
