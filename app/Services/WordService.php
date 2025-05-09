@@ -34,7 +34,7 @@ class WordService
 
     public function getWordByLabel(string $label, User $user): array
     {
-        $word = $this->wordRepository->getWordsByLabel($label);
+        $word = $this->wordRepository->getWordsByLabel($label, exactMatch: true);
 
         if ($word) {
 

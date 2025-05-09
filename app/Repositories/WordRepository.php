@@ -16,16 +16,25 @@ class WordRepository
         return $query->paginate($perPage);
     }
 
-    public function builderWordsByLabel(string $label, array $columns = ['*'])
+    public function builderWordsByLabel(string $label, array $columns = ['*'], bool $exactMatch = false)
     {
-        return Word::query()
-            ->where('label', 'like', "%$label%")
-            ->select($columns);
+        $query = Word::query();
+
+        if ($exactMatch) {
+
+            $query->where('label', $label);
+
+        } else {
+
+            $query->where('label', 'like', "%$label%");
+        }
+
+        return $query->select($columns);
     }
 
-    public function getWordsByLabel(string $label, array $columns = ['*'])
+    public function getWordsByLabel(string $label, array $columns = ['*'], bool $exactMatch = false)
     {
-        return $this->builderWordsByLabel($label, $columns)
+        return $this->builderWordsByLabel($label, $columns, $exactMatch)
             ->first();
     }
 
