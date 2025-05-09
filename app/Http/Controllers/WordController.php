@@ -41,14 +41,6 @@ class WordController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      */
     public function show(Request $request, $wordLabel)
@@ -66,21 +58,5 @@ class WordController extends Controller
         }
 
         return response($dataWord);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Word $word)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Word $word)
-    {
-        //
     }
 }

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Favorite;
 use Illuminate\Http\Request;
 use App\Services\FavoriteService;
+
 class FavoriteController extends Controller
 {
     protected FavoriteService $favoriteService;
@@ -31,22 +31,6 @@ class FavoriteController extends Controller
         $this->favoriteService->toggleFavorite(true, $request->word, auth()->user());
 
         return response()->json(['message' => 'Favorite toggled successfully']);
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Favorite $favorite)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Favorite $favorite)
-    {
-        //
     }
 
     /**
