@@ -28,11 +28,16 @@ class Handler extends ExceptionHandler
     {
         $statusCode = $exception?->getCode() ?? 500;
 
+        if (!$statusCode) {
+
+            $statusCode = 500;
+        }
+
         $response = [
             'message' => $statusCode == 500 ? 'Internal server error' : $exception->getMessage(),
         ];
 
-        return response()->json($response, 400);
+        return response()->json($response, $statusCode);
     }
 
     public function mustHandleApiException($request, $exception)

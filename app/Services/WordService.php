@@ -38,6 +38,8 @@ class WordService
 
         if ($word) {
 
+            $wordData = [];
+
             $this->userVisitHistoryService->store($user, $word);
 
             $response = Http::get("https://api.dictionaryapi.dev/api/v2/entries/en/{$label}");
@@ -46,12 +48,14 @@ class WordService
 
                 $apiData = $response->json()[0];
                 
-                $word->meanings = $apiData['meanings'] ?? [];
-                $word->phonetics = $apiData['phonetics'] ?? [];
-                $word->origin = $apiData['origin'] ?? null;
+                $wordData['meanings'] = $apiData['meanings'] ?? [];
+                $wordData['phonetics'] = $apiData['phonetics'] ?? [];
+                $wordData['origin'] = $apiData['origin'] ?? null;
             }
 
-            return $word->toArray();
+            $wordData['label'] = $word->label;
+
+            return $wordData;
         }
 
         return false;

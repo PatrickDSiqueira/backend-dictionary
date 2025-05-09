@@ -45,10 +45,11 @@ trait CacheableResponse
     private function generateCacheKey(Request $request): string
     {
         $userId = auth()->id();
-        $routeName = $request->route()->getName();
+        $uri = $request->route()->uri();
+        $pathInfo = $request->getPathInfo();
         $queryStringHash = md5($request->getQueryString());
 
-        return "response_cache:{$routeName}:user_{$userId}:query_{$queryStringHash}";
+        return "response_cache:{$uri}:{$pathInfo}:user_{$userId}:query_{$queryStringHash}";
     }
 
     /**
